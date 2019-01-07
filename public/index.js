@@ -73,6 +73,22 @@ const events = [{
   }
 }];
 
+function computePrice(bars, events) {
+    var time_component;
+    var people_component;
+    for (var i = 0; i < events.length; i++) {
+        for (var j = 0; j < bars.length; j++) {
+            if (events[i].barId == bars[j].id) {
+                time_component = events[i].time * bars[j].pricePerHour;
+                people_component = events[i].persons * bars[j].pricePerPerson;
+                events[i].price = time_component + people_component;
+            }
+        }
+    }
+}
+
+computePrice(bars, events);
+
 //list of actors for payment
 //useful from step 5
 const actors = [{
