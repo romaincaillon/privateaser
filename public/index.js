@@ -76,12 +76,21 @@ const events = [{
 function computePrice(bars, events) {
     var time_component;
     var people_component;
+    var event_price;
     for (var i = 0; i < events.length; i++) {
         for (var j = 0; j < bars.length; j++) {
-            if (events[i].barId == bars[j].id) {
+            if (events[i].barId === bars[j].id) {
                 time_component = events[i].time * bars[j].pricePerHour;
                 people_component = events[i].persons * bars[j].pricePerPerson;
-                events[i].price = time_component + people_component;
+                event_price = time_component + people_component;
+                if (events[i].persons >= 60)
+                    event_price *= 0.5;
+                else if (events[i].persons >= 20)
+                    event_price *= 0.7;
+                else if (events[i].persons >= 10)
+                    event_price *= 0.9;
+                events[i].price = event_price;
+                break;
             }
         }
     }
