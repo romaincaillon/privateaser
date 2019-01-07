@@ -102,9 +102,6 @@ function computeCommission(bar, event) {
 }
 
 (function(bars, events) {
-    var event_commission;
-    var insurance;
-    var treasury;
     for (var i = 0; i < events.length; i++) {
         for (var j = 0; j < bars.length; j++) {
             var event = events[i];
