@@ -77,19 +77,30 @@ function computePrice(bars, events) {
     var time_component;
     var people_component;
     var event_price;
+    var event_commission;
+    var insurance;
+    var treasury;
     for (var i = 0; i < events.length; i++) {
         for (var j = 0; j < bars.length; j++) {
-            if (events[i].barId === bars[j].id) {
-                time_component = events[i].time * bars[j].pricePerHour;
-                people_component = events[i].persons * bars[j].pricePerPerson;
+            var event = events[i];
+            var bar = bars[j];
+            if (event.barId === bar.id) {
+                time_component = event.time * bar.pricePerHour;
+                people_component = event.persons * bar.pricePerPerson;
                 event_price = time_component + people_component;
-                if (events[i].persons >= 60)
+                if (event.persons >= 60)
                     event_price *= 0.5;
-                else if (events[i].persons >= 20)
+                else if (event.persons >= 20)
                     event_price *= 0.7;
-                else if (events[i].persons >= 10)
+                else if (event.persons >= 10)
                     event_price *= 0.9;
-                events[i].price = event_price;
+                event.price = event_price;
+                event_commission = 0.3 * event_price;
+                insurance = 0.5 * event_commission;
+                event.commission.insurance = insurance;
+                treasury = event.persons;
+                event.commission.treasury = treasury;
+                event.commission.privateaser = event_commission - (insurance + treasury);
                 break;
             }
         }
