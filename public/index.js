@@ -77,23 +77,23 @@ function computePrice(bar, event) {
     var time_component;
     var people_component;
     var event_price;
-        time_component = event.time * bar.pricePerHour;
-        people_component = event.persons * bar.pricePerPerson;
-        event_price = time_component + people_component;
-        if (event.persons >= 60)
-            event_price *= 0.5;
-        else if (event.persons >= 20)
-            event_price *= 0.7;
-        else if (event.persons >= 10)
-            event_price *= 0.9;
-        event.price = event_price;
+    time_component = event.time * bar.pricePerHour;
+    people_component = event.persons * bar.pricePerPerson;
+    event_price = time_component + people_component;
+    if (event.persons >= 60)
+        event_price *= 0.5;
+    else if (event.persons >= 20)
+        event_price *= 0.7;
+    else if (event.persons >= 10)
+        event_price *= 0.9;
+    event.price = event_price;
 }
 
-function computeCommission(bar, event) {
+function computeCommission(event) {
     var event_commission;
     var insurance;
     var treasury;
-    event_commission = 0.3 * event.price
+    event_commission = 0.3 * event.price;
     insurance = 0.5 * event_commission;
     event.commission.insurance = insurance;
     treasury = event.persons;
@@ -101,17 +101,25 @@ function computeCommission(bar, event) {
     event.commission.privateaser = event_commission - (insurance + treasury);
 }
 
-(function(bars, events) {
+function computeDeductibleReductionPrice(event) {
+    if (event.options.deductibleReduction)
+        event.price += event.persons;
+}
+
+(function() {
     for (var i = 0; i < events.length; i++) {
+        var event = events[i];
         for (var j = 0; j < bars.length; j++) {
-            var event = events[i];
             var bar = bars[j];
-            computePrice(bar, event);
-            computeCommission(bar, event);
-            break;
+            if (bar.id === event.barId) {
+                computePrice(bar, event);
+                computeCommission(event);
+                computeDeductibleReductionPrice(event);
+                break;
+            }
         }
     }
-});
+})();
 
 //list of actors for payment
 //useful from step 5
