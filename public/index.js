@@ -73,54 +73,6 @@ const events = [{
   }
 }];
 
-function computePrice(bar, event) {
-    var time_component;
-    var people_component;
-    var event_price;
-    time_component = event.time * bar.pricePerHour;
-    people_component = event.persons * bar.pricePerPerson;
-    event_price = time_component + people_component;
-    if (event.persons >= 60)
-        event_price *= 0.5;
-    else if (event.persons >= 20)
-        event_price *= 0.7;
-    else if (event.persons >= 10)
-        event_price *= 0.9;
-    event.price = event_price;
-}
-
-function computeCommission(event) {
-    var event_commission;
-    var insurance;
-    var treasury;
-    event_commission = 0.3 * event.price;
-    insurance = 0.5 * event_commission;
-    event.commission.insurance = insurance;
-    treasury = event.persons;
-    event.commission.treasury = treasury;
-    event.commission.privateaser = event_commission - (insurance + treasury);
-}
-
-function computeDeductibleReductionPrice(event) {
-    if (event.options.deductibleReduction)
-        event.price += event.persons;
-}
-
-(function() {
-    for (var i = 0; i < events.length; i++) {
-        var event = events[i];
-        for (var j = 0; j < bars.length; j++) {
-            var bar = bars[j];
-            if (bar.id === event.barId) {
-                computePrice(bar, event);
-                computeCommission(event);
-                computeDeductibleReductionPrice(event);
-                break;
-            }
-        }
-    }
-})();
-
 //list of actors for payment
 //useful from step 5
 const actors = [{
@@ -193,6 +145,58 @@ const actors = [{
     'amount': 0
   }]
 }];
+
+function computePrice(bar, event) {
+    var time_component;
+    var people_component;
+    var event_price;
+    time_component = event.time * bar.pricePerHour;
+    people_component = event.persons * bar.pricePerPerson;
+    event_price = time_component + people_component;
+    if (event.persons >= 60)
+        event_price *= 0.5;
+    else if (event.persons >= 20)
+        event_price *= 0.7;
+    else if (event.persons >= 10)
+        event_price *= 0.9;
+    event.price = event_price;
+}
+
+function computeCommission(event) {
+    var event_commission;
+    var insurance;
+    var treasury;
+    event_commission = 0.3 * event.price;
+    insurance = 0.5 * event_commission;
+    event.commission.insurance = insurance;
+    treasury = event.persons;
+    event.commission.treasury = treasury;
+    event.commission.privateaser = event_commission - (insurance + treasury);
+}
+
+function computeDeductibleReductionPrice(event) {
+    if (event.options.deductibleReduction)
+        event.price += event.persons;
+}
+
+(function() {
+    for (var i = 0; i < events.length; i++) {
+        var event = events[i];
+        var bar = bars.find(bar => bar.id === event.barId);
+        computePrice(bar, event);
+        computeCommission(event);
+        computeDeductibleReductionPrice(event);
+    }
+})();
+
+(function() {
+    events.forEach(function(event) {
+        var bar = bars.find(bar => bar.id === event.barId);
+        computePrice(bar, event);
+        computeCommission(event);
+        computeDeductibleReductionPrice(event);
+    });
+})();
 
 console.log(bars);
 console.log(events);
