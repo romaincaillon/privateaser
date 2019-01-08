@@ -197,7 +197,7 @@ function computeTransactions(event_actors, event) {
                 actor.amount = event.commission.treasury;
                 break;
             case 'privateaser':
-                actor.amount = event.commission.privateaser + event.persons;
+                actor.amount = event.commission.privateaser + deductible_reduction;
                 break;
         }
     });
