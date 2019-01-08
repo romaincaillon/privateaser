@@ -179,12 +179,40 @@ function computeDeductibleReductionPrice(event) {
         event.price += event.persons;
 }
 
+function computeTransactions(event_actors, event) {
+    event_actors.payment.forEach(function(actor) {
+        var deductible_reduction = event.options.deductibleReduction ? event.persons : 0;
+        switch (actor.who) {
+            case 'booker':
+                actor.amount = event.price;
+                break;
+            case 'bar':
+                actor.amount = event.price - deductible_reduction - (event.commission.insurance
+                  + event.commission.treasury + event.commission.privateaser);
+                break;
+            case 'insurance':
+                actor.amount = event.commission.insurance;
+                break;
+            case 'treasury':
+                actor.amount = event.commission.treasury;
+                break;
+            case 'privateaser':
+                actor.amount = event.commission.privateaser + event.persons;
+                break;
+        }
+    });
+}
+
 (function() {
     events.forEach(function(event) {
         var bar = bars.find(bar => bar.id === event.barId);
         computePrice(bar, event);
         computeCommission(event);
         computeDeductibleReductionPrice(event);
+    });
+    actors.forEach(function(event_actors) {
+        var event = events.find(event => event.id === event_actors.eventId);
+        computeTransactions(event_actors, event);
     });
 })();
 
