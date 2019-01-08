@@ -180,16 +180,6 @@ function computeDeductibleReductionPrice(event) {
 }
 
 (function() {
-    for (var i = 0; i < events.length; i++) {
-        var event = events[i];
-        var bar = bars.find(bar => bar.id === event.barId);
-        computePrice(bar, event);
-        computeCommission(event);
-        computeDeductibleReductionPrice(event);
-    }
-})();
-
-(function() {
     events.forEach(function(event) {
         var bar = bars.find(bar => bar.id === event.barId);
         computePrice(bar, event);
